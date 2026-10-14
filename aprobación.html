@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Encuesta de Satisfacción - Red de Ambulatorios</title>
+    
+    <style>
+        :root {
+            --bg-gradient: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+            --card-bg: rgba(255, 255, 255, 0.96);
+            --primary-color: #007bff;
+            --accent-green: #28a745;
+            --text-dark: #1e293b;
+            --border-radius: 20px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: var(--bg-gradient);
+            color: var(--text-dark);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            background: var(--card-bg);
+            padding: 35px 25px;
+            border-radius: var(--border-radius);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            max-width: 460px;
+            width: 100%;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .header-icon {
+            font-size: 45px;
+            margin-bottom: 10px;
+            display: inline-block;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        h2 {
+            font-size: 24px;
+            font-weight: 800;
+            color: #0f172a;
+            margin-bottom: 8px;
+        }
+
+        p.subtitle {
+            color: #64748b;
+            font-size: 14px;
+            margin-bottom: 25px;
+            line-height: 1.5;
+        }
+
+        /* Tarjetas de Opciones Dinámicas */
+        .rating-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .rating-card {
+            background: #ffffff;
+            border: 2px solid #e2e8f0;
+            border-radius: 14px;
+            padding: 16px 10px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            user-select: none;
+        }
+
+        .rating-card .emoji {
+            font-size: 32px;
+            transition: transform 0.3s ease;
+        }
+
+        .rating-card span {
+            font-size: 14px;
+            font-weight: 700;
+            color: #334155;
+        }
+
+        /* Efectos Dinámicos al Pasar el Mouse / Seleccionar */
+        .rating-card:hover {
+            transform: translateY(-4px);
+            border-color: #3b82f6;
+            box-shadow: 0 10px 20px rgba(59, 130, 246, 0.15);
+        }
+
+        .rating-card:hover .emoji {
+            transform: scale(1.25);
+        }
+
+        .rating-card.selected {
+            border-color: #2563eb;
+            background: #eff6ff;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+        }
+
+        .rating-card.selected .emoji {
+            transform: scale(1.2) rotate(5deg);
+        }
+
+        /* Campo de comentarios */
+        .input-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #475569;
+            margin-bottom: 6px;
+        }
+
+        .input-group textarea,
+        .input-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 14px;
+            font-family: inherit;
+            outline: none;
+            transition: border-color 0.3s ease;
+            background: #f8fafc;
+        }
+
+        .input-group textarea:focus,
+        .input-group input:focus {
+            border-color: #2563eb;
+            background: #ffffff;
+        }
+
+        /* Botón de Enviar a WhatsApp */
+        .btn-send {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #25d366, #128c7e);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 20px rgba(37, 211, 102, 0.35);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-send:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(37, 211, 102, 0.45);
+            opacity: 0.95;
+        }
+
+        .btn-send:active {
+            transform: translateY(0);
+        }
+
+        /* Tarjeta de Agradecimiento y Eslogan */
+        .thank-you-card {
+            display: none;
+            background: #f0fdf4;
+            border: 2px solid #22c55e;
+            padding: 25px;
+            border-radius: 16px;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .thank-you-card h3 {
+            color: #15803d;
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+
+        .slogan-text {
+            font-style: italic;
+            font-weight: 700;
+            color: #166534;
+            font-size: 15px;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px dashed #bbf7d0;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div id="surveyForm">
+        <div class="header-icon">🏥</div>
+        <h2>¿Cómo fue tu atención médica?</h2>
+        <p class="subtitle">Selecciona una opción para enviarle tus comentarios a la oficina central de la Red de Ambulatorios.</p>
+
+        <!-- Selector de Nombre del Paciente -->
+        <div class="input-group">
+            <label for="nombrePaciente">Nombre y Apellido:</label>
+            <input type="text" id="nombrePaciente" placeholder="...">
+        </div>
+
+                <!-- Selector de Nombre del Ambulatorio -->
+        <div class="input-group">
+            <label for="nombreAmbulatorio">Nombre del Ambulatorio</label>
+            <input type="text" id="nombrePaciente" placeholder="...">
+        </div>
+
+        <!-- Tarjetas Dinámicas de Calificación -->
+        <div class="rating-grid">
+            <div class="rating-card" onclick="seleccionarOpcion(this, 'Excelente 🌟')">
+                <span class="emoji">😁</span>
+                <span>Excelente</span>
+            </div>
+            <div class="rating-card" onclick="seleccionarOpcion(this, 'Buena 👍')">
+                <span class="emoji">🙂</span>
+                <span>Buena</span>
+            </div>
+            <div class="rating-card" onclick="seleccionarOpcion(this, 'Regular 😐')">
+                <span class="emoji">😐</span>
+                <span>Regular</span>
+            </div>
+            <div class="rating-card" onclick="seleccionarOpcion(this, 'Debe mejorar ⚠️')">
+                <span class="emoji">🙁</span>
+                <span>Debe mejorar</span>
+            </div>
+        </div>
+
+        <!-- Comentario Adicional -->
+        <div class="input-group">
+            <label for="comentario">¿Algún comentario adicional?</label>
+            <textarea id="comentario" rows="3" placeholder="Escribe aquí tu opinión sobre la atención..."></textarea>
+        </div>
+
+        <button class="btn-send" onclick="enviarAWhatsApp()">
+            Enviar Opinión por WhatsApp
+        </button>
+    </div>
+
+    <!-- Pantalla de Agradecimiento -->
+    <div id="thankYouCard" class="thank-you-card">
+        <h3>¡Muchas Gracias! ❤️</h3>
+        <p>Tus comentarios han sido enviados correctamente a la oficina central.</p>
+        <p class="slogan-text">
+            "Para Farith Fraija, su salud es primordial, ¡Muchas Gracias."
+        </p>
+    </div>
+</div>
+
+<script>
+    let calificacionSeleccionada = "";
+
+    function seleccionarOpcion(elemento, valor) {
+        // Remover selección previa
+        const tarjetas = document.querySelectorAll('.rating-card');
+        tarjetas.forEach(card => card.classList.remove('selected'));
+
+        // Marcar la seleccionada
+        elemento.classList.add('selected');
+        calificacionSeleccionada = valor;
+    }
+
+    function enviarAWhatsApp() {
+        if (!calificacionSeleccionada) {
+            alert("Por favor, selecciona una opción de calificacion (Excelente, Buena, Regular o Debe mejorar).");
+            return;
+        }
+
+        const nombre = document.getElementById('nombrePaciente').value.trim() || "Paciente Anónimo";
+        const comentario = document.getElementById('comentario').value.trim() || "Sin comentarios adicionales";
+
+        // Número de la oficina central (Coloca el número real de la oficina)
+        const numeroOficina = "584242911580";
+
+        // Mensaje ordenado que llegará a la oficina
+        const mensaje = `*EVALUACIÓN DE ATENCIÓN MÉDICA*%0A%0A` +
+                        `*Paciente:* ${nombre}%0A` +
+                        `*Calificación:* ${calificacionSeleccionada}%0A` +
+                        `*Comentario:* ${comentario}%0A%0A` +
+                        `_Para su salud, Farith Fraija, su salud es lo importante._`;
+
+        const urlWhatsApp = `https://api.whatsapp.com/send?phone=${numeroOficina}&text=${mensaje}`;
+
+        // Mostrar pantalla de agradecimiento en el navegador
+        document.getElementById('surveyForm').style.display = 'none';
+        document.getElementById('thankYouCard').style.display = 'block';
+
+        // Abrir WhatsApp con la respuesta lista
+        window.open(urlWhatsApp, '_blank');
+    }
+</script>
+
+</body>
+</html>
